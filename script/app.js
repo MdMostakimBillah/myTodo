@@ -175,9 +175,19 @@ function requestNotificationPermission() {
     if (Notification.permission === "default") {
         Notification.requestPermission(permission => {
             console.log("Notification permission " + (permission === "granted" ? "granted" : "denied"));
+            if (permission === "granted") {
+                alert("Notification permission granted! You will now receive timeout alerts.");
+            } else {
+                alert("Notification permission denied. You won't receive timeout alerts unless you enable them in browser settings.");
+            }
         });
     } else {
         console.log("Notification permission is " + Notification.permission);
+        if (Notification.permission === "denied") {
+            alert("Notification permission is blocked. Please enable it in your browser settings under Site Permissions > Notifications.");
+        } else if (Notification.permission === "granted") {
+            console.log("Notification permission already granted.");
+        }
     }
     return Notification.permission === "granted";
 }
@@ -189,7 +199,7 @@ function showNotification() {
         try {
             const notification = new Notification("Task Timeout", {
                 body: "Your time is out",
-                tag: "timeout-notification" // Unique tag to prevent duplicates
+                tag: "timeout-notification"
             });
             console.log("Notification shown at", new Date().toLocaleTimeString());
             notification.onshow = () => console.log("Notification displayed to user");
@@ -215,8 +225,17 @@ function attachDragListeners() {
 // Initial attachment of event listeners
 attachDragListeners();
 
-// Request notification permission on load
+// Request notification permission on load and add manual button
 requestNotificationPermission();
+document.addEventListener('DOMContentLoaded', () => {
+    const permissionButton = document.createElement('button');
+    permissionButton.textContent = "Enable Notifications";
+    permissionButton.style.position = 'fixed';
+    permissionButton.style.top = '10px';
+    permissionButton.style.right = '10px';
+    permissionButton.addEventListener('click', requestNotificationPermission);
+    document.body.appendChild(permissionButton);
+});
 
 function dragStart() {
     draggableItem = this;
