@@ -172,6 +172,14 @@ function requestNotificationPermission() {
         console.log("This browser does not support desktop notifications.");
         return false;
     }
+
+    // Check if permission has already been requested
+    const hasRequested = localStorage.getItem('notificationPermissionRequested');
+    if (hasRequested) {
+        console.log("Notification permission already requested. Current status:", Notification.permission);
+        return Notification.permission === "granted";
+    }
+
     if (Notification.permission === "default") {
         Notification.requestPermission(permission => {
             console.log("Notification permission " + (permission === "granted" ? "granted" : "denied"));
@@ -180,14 +188,13 @@ function requestNotificationPermission() {
             } else {
                 alert("Notification permission denied. You won't receive timeout alerts unless you enable them in browser settings.");
             }
+            // Mark permission as requested
+            localStorage.setItem('notificationPermissionRequested', 'true');
         });
     } else {
         console.log("Notification permission is " + Notification.permission);
-        if (Notification.permission === "denied") {
-            alert("Notification permission is blocked. Please enable it in your browser settings under Site Permissions > Notifications.");
-        } else if (Notification.permission === "granted") {
-            console.log("Notification permission already granted.");
-        }
+        // Mark permission as requested even if already granted/denied
+        localStorage.setItem('notificationPermissionRequested', 'true');
     }
     return Notification.permission === "granted";
 }
@@ -225,16 +232,9 @@ function attachDragListeners() {
 // Initial attachment of event listeners
 attachDragListeners();
 
-// Request notification permission on load and add manual button
-requestNotificationPermission();
+// Request notification permission on first page load
 document.addEventListener('DOMContentLoaded', () => {
-    const permissionButton = document.createElement('button');
-    permissionButton.textContent = "Enable Notifications";
-    permissionButton.style.position = 'fixed';
-    permissionButton.style.top = '10px';
-    permissionButton.style.right = '10px';
-    permissionButton.addEventListener('click', requestNotificationPermission);
-    document.body.appendChild(permissionButton);
+    requestNotificationPermission();
 });
 
 function dragStart() {
