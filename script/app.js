@@ -172,39 +172,30 @@ function requestNotificationPermission() {
         console.log("This browser does not support desktop notifications.");
         return false;
     }
-
     if (Notification.permission === "default") {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                console.log("Notification permission granted.");
-            } else {
-                console.log("Notification permission denied.");
-            }
+        Notification.requestPermission(permission => {
+            console.log("Notification permission " + (permission === "granted" ? "granted" : "denied"));
         });
-    } else if (Notification.permission === "denied") {
-        console.log("Notification permission was previously denied.");
-        return false;
-    } else if (Notification.permission === "granted") {
-        console.log("Notification permission already granted.");
+    } else {
+        console.log("Notification permission is " + Notification.permission);
     }
     return Notification.permission === "granted";
 }
 
 // Function to show a notification
-function showNotification(taskDescription) {
-    console.log("Attempting to show notification for task:", taskDescription);
+function showNotification() {
+    console.log("Attempting to show timeout notification.");
     if (Notification.permission === "granted") {
         try {
             new Notification("Task Timeout", {
-                body: `The task "${taskDescription}" has timed out!`,
-                icon: "https://via.placeholder.com/32" // Optional: Add an icon URL
+                body: "Your time is out"
             });
-            console.log("Notification successfully shown for task:", taskDescription);
+            console.log("Notification shown: Your time is out");
         } catch (error) {
-            console.error("Error showing notification:", error);
+            console.error("Failed to show notification:", error);
         }
     } else {
-        console.log(`Notification not shown: The task "${taskDescription}" has timed out! (Permission not granted)`);
+        console.log("Notification not shown: Permission not granted");
     }
 }
 
@@ -221,7 +212,7 @@ function attachDragListeners() {
 // Initial attachment of event listeners
 attachDragListeners();
 
-// Request notification permission immediately
+// Request notification permission on load
 requestNotificationPermission();
 
 function dragStart() {
@@ -271,11 +262,9 @@ function startTimer(taskId) {
 
     let task = allTasks[taskIndex];
     
-    // If timer has already timed out, don't start a new timer
     if (task.timerState === 'timeout') {
         const taskDiv = document.querySelector(`.taskList[data-task-id="${taskId}"]`);
         if (taskDiv) {
-            const description = taskDiv.querySelector('p');
             const timerDisplay = taskDiv.querySelector('strong');
             const progressBar = taskDiv.querySelector('.progress-bar');
             timerDisplay.textContent = 'Time out';
@@ -285,71 +274,57 @@ function startTimer(taskId) {
     }
 
     let remainingSeconds;
-
-    // Load saved remainingSeconds and adjust for elapsed time
     if (typeof task.remainingSeconds !== 'undefined' && task.lastUpdated) {
         remainingSeconds = task.remainingSeconds;
         const elapsedMs = Date.now() - task.lastUpdated;
         const elapsedSeconds = Math.floor(elapsedMs / 1000);
         console.log(`Task ${taskId}: Loaded remainingSeconds=${remainingSeconds}, elapsedSeconds=${elapsedSeconds}`);
         remainingSeconds = Math.max(0, remainingSeconds - elapsedSeconds);
-        console.log(`Task ${taskId}: Adjusted remainingSeconds=${remainingSeconds}`);
     } else {
         const hours = parseInt(task.hour) || 0;
         const minutes = parseInt(task.minute) || 0;
         remainingSeconds = hours * 3600 + minutes * 60;
-        console.log(`Task ${taskId}: Initial remainingSeconds=${remainingSeconds}`);
     }
 
-    // Store initial time for progress calculation
-    const initialSeconds = remainingSeconds + (typeof task.remainingSeconds !== 'undefined' && task.lastUpdated ? elapsedSeconds : 0);
+    const initialSeconds = remainingSeconds + (typeof task.remainingSeconds !== 'undefined' && task.lastUpdated ? Math.floor((Date.now() - task.lastUpdated) / 1000) : 0);
 
-    // Clear any existing timer
     clearInterval(timers[taskId]);
 
-    // Start the countdown
     timers[taskId] = setInterval(() => {
         if (remainingSeconds <= 0) {
             clearInterval(timers[taskId]);
-            task.timerState = 'timeout'; // Mark as timed out
-            task.progress = 100; // Set progress to 100% on timeout
+            task.timerState = 'timeout';
+            task.progress = 100;
             delete task.remainingSeconds;
             delete task.lastUpdated;
             localStorage.setItem('movedTasks', JSON.stringify(allTasks));
             const taskDiv = document.querySelector(`.taskList[data-task-id="${taskId}"]`);
             if (taskDiv) {
-                const description = taskDiv.querySelector('p');
                 const timerDisplay = taskDiv.querySelector('strong');
                 const progressBar = taskDiv.querySelector('.progress-bar');
                 timerDisplay.textContent = 'Time out';
                 if (progressBar) progressBar.style.width = '100%';
-                // Show notification when timer times out
-                showNotification(task.description);
+                showNotification();
             }
             console.log(`Timer for task ${taskId} completed`);
             return;
         }
 
         remainingSeconds--;
-
-        // Update task state and save to localStorage
         task.remainingSeconds = remainingSeconds;
         task.lastUpdated = Date.now();
-        task.timerState = 'running'; // Mark as running while counting down
-        // Calculate progress percentage
+        task.timerState = 'running';
         task.progress = ((initialSeconds - remainingSeconds) / initialSeconds) * 100;
         localStorage.setItem('movedTasks', JSON.stringify(allTasks));
-        console.log(`Task ${taskId}: Updated remainingSeconds=${remainingSeconds}, progress=${task.progress}%, lastUpdated=${task.lastUpdated}`);
-
-        // Convert to HH:MM:SS
-        const hours = Math.floor(remainingSeconds / 3600);
-        const minutes = Math.floor((remainingSeconds % 3600) / 60);
-        const seconds = remainingSeconds % 60;
+        console.log(`Task ${taskId}: Updated remainingSeconds=${remainingSeconds}, progress=${task.progress}%`);
 
         const taskDiv = document.querySelector(`.taskList[data-task-id="${taskId}"]`);
         if (taskDiv) {
             const timerDisplay = taskDiv.querySelector('strong');
             const progressBar = taskDiv.querySelector('.progress-bar');
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
             timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             if (progressBar) progressBar.style.width = `${task.progress}%`;
         }
@@ -378,9 +353,8 @@ function dragDrop() {
                     clearInterval(timers[taskId]);
                     delete task.remainingSeconds;
                     delete task.lastUpdated;
-                    delete task.timerState; // Reset timer state
-                    delete task.progress; // Reset progress
-                    const description = draggableItem.querySelector('p');
+                    delete task.timerState;
+                    delete task.progress;
                     const timerDisplay = draggableItem.querySelector('strong');
                     const progressBar = draggableItem.querySelector('.progress-bar');
                     timerDisplay.textContent = `${task.hour}:${task.minute}:00`;
@@ -389,37 +363,30 @@ function dragDrop() {
                     clearInterval(timers[taskId]);
                     delete task.remainingSeconds;
                     delete task.lastUpdated;
-                    delete task.timerState; // Reset timer state
-                    delete task.progress; // Reset progress
-                    const description = draggableItem.querySelector('p');
+                    delete task.timerState;
+                    delete task.progress;
                     const timerDisplay = draggableItem.querySelector('strong');
                     const progressBar = draggableItem.querySelector('.progress-bar');
                     timerDisplay.textContent = 'Completed';
                     if (progressBar) progressBar.style.width = '0%';
                 }
 
-                // Update order for tasks in the same container
                 if (oldContainer === this) {
                     const containerTasks = Array.from(this.querySelectorAll('.taskList'));
                     containerTasks.forEach((item, index) => {
                         const taskIdx = allTasks.findIndex(t => t.id === item.dataset.taskId);
-                        if (taskIdx !== -1) {
-                            allTasks[taskIdx].order = index;
-                        }
+                        if (taskIdx !== -1) allTasks[taskIdx].order = index;
                     });
                 } else {
-                    // Reset order when moving to a new container
                     const containerTasks = Array.from(this.querySelectorAll('.taskList'));
                     containerTasks.forEach((item, index) => {
                         const taskIdx = allTasks.findIndex(t => t.id === item.dataset.taskId);
-                        if (taskIdx !== -1) {
-                            allTasks[taskIdx].order = index;
-                        }
+                        if (taskIdx !== -1) allTasks[taskIdx].order = index;
                     });
                 }
             }
             localStorage.setItem('movedTasks', JSON.stringify(allTasks));
-            console.log('Stored moved tasks in localStorage under "movedTasks":', JSON.parse(localStorage.getItem('movedTasks')));
+            console.log('Stored moved tasks:', JSON.parse(localStorage.getItem('movedTasks')));
         } else {
             console.error('Task not found in allTasks:', taskId);
         }
@@ -439,25 +406,20 @@ const createTaskList = document.querySelector('.createTaskList');
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
-
     let taskData = {
         id: generateTaskId(),
         description: taskArea.value,
         hour: (hours.value == '') ? '00' : hours.value,
         minute: minutes.value,
         status: createTaskList.id || 'CreateTask',
-        order: allTasks.filter(t => t.status === (createTaskList.id || 'CreateTask')).length // Initial order
+        order: allTasks.filter(t => t.status === (createTaskList.id || 'CreateTask')).length
     };
-    
     allTasks.push(taskData);
-
     taskArea.value = '';
     hours.value = '';
     minutes.value = '';
-
     console.log('New task added:', taskData);
     console.log('All tasks:', allTasks);
-
     localStorage.setItem('tasks', JSON.stringify(allTasks));
     appendTask(taskData);
     attachDragListeners();
@@ -465,30 +427,23 @@ form.addEventListener("submit", (e) => {
 
 function allTaskStore() {
     localStorage.setItem('tasks', JSON.stringify(allTasks));
-    console.log('Saved to localStorage (tasks):', JSON.parse(localStorage.getItem('tasks')));
+    console.log('Saved to localStorage:', JSON.parse(localStorage.getItem('tasks')));
 }
 
 function loadTasks() {
     const movedTasks = localStorage.getItem('movedTasks');
-    if (movedTasks) {
-        allTasks = JSON.parse(movedTasks);
-    } else {
+    if (movedTasks) allTasks = JSON.parse(movedTasks);
+    else {
         const storedTasks = localStorage.getItem('tasks');
         allTasks = storedTasks ? JSON.parse(storedTasks) : [];
     }
 
-    all_status.forEach(status => {
-        if (status) status.innerHTML = '';
-    });
+    all_status.forEach(status => status.innerHTML = '');
     if (createTaskList) createTaskList.innerHTML = '';
     if (trash) trash.innerHTML = '';
 
-    // Group tasks by status and sort by order
     const tasksByStatus = {};
-    allTasks.forEach(task => {
-        if (!tasksByStatus[task.status]) tasksByStatus[task.status] = [];
-        tasksByStatus[task.status].push(task);
-    });
+    allTasks.forEach(task => (tasksByStatus[task.status] = tasksByStatus[task.status] || []).push(task));
 
     Object.keys(tasksByStatus).forEach(status => {
         tasksByStatus[status].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -502,7 +457,6 @@ function loadTasks() {
                     const progressBar = taskDiv.querySelector('.progress-bar');
                     if (task.status === 'Processing') {
                         if (task.timerState === 'timeout') {
-                            const description = taskDiv.querySelector('p');
                             const timerDisplay = taskDiv.querySelector('strong');
                             timerDisplay.textContent = 'Time out';
                             if (progressBar) progressBar.style.width = '100%';
@@ -511,18 +465,15 @@ function loadTasks() {
                             console.log(`Starting timer for task ${task.id} with remainingSeconds=${task.remainingSeconds}`);
                             startTimer(task.id);
                         } else if (task.progress !== undefined) {
-                            const description = taskDiv.querySelector('p');
                             const timerDisplay = taskDiv.querySelector('strong');
                             timerDisplay.textContent = `${task.hour}:${task.minute}:00`;
                             if (progressBar) progressBar.style.width = `${task.progress}%`;
                         }
                     } else if (task.status === 'Complete') {
-                        const description = taskDiv.querySelector('p');
                         const timerDisplay = taskDiv.querySelector('strong');
                         timerDisplay.textContent = 'Completed';
                         if (progressBar) progressBar.style.width = '0%';
                     } else {
-                        const description = taskDiv.querySelector('p');
                         const timerDisplay = taskDiv.querySelector('strong');
                         timerDisplay.textContent = `${task.hour}:${task.minute}:00`;
                         if (progressBar) progressBar.style.width = '0%';
@@ -539,19 +490,15 @@ function appendTask(task) {
     const taskDiv = document.createElement('div');
     const progressBar = document.createElement('div');
     progressBar.classList = 'progress-bar';
-    progressBar.style.width = '0%'; // Start with 0% width
-
+    progressBar.style.width = '0%';
     taskDiv.className = 'taskList';
     taskDiv.draggable = true;
     taskDiv.dataset.taskId = task.id;
     taskDiv.innerHTML = `<p>${task.description}</p> <strong>${task.hour}:${task.minute}:00</strong>`;
-    taskDiv.appendChild(progressBar); // Append the progress bar div
+    taskDiv.appendChild(progressBar);
     const defaultContainer = createTaskList || document.querySelector('.createTaskList');
-    if (defaultContainer) {
-        defaultContainer.appendChild(taskDiv);
-    } else {
-        console.error('Default container (createTaskList) not found');
-    }
+    if (defaultContainer) defaultContainer.appendChild(taskDiv);
+    else console.error('Default container (createTaskList) not found');
 }
 
 document.addEventListener('DOMContentLoaded', loadTasks);
