@@ -205,7 +205,7 @@ function showNotification() {
     if (Notification.permission === "granted") {
         try {
             const notification = new Notification("Task Timeout", {
-                body: "Your time is out",
+                body: "Task Time is Out",
                 tag: "timeout-notification"
             });
             console.log("Notification shown at", new Date().toLocaleTimeString());
