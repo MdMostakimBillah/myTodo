@@ -1,0 +1,402 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:opsz,wght@10..72,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+body{
+    padding: 6px;
+    min-width: 100dvw;
+    min-height: 100dvh;
+    background-color: #0f0f11;
+    overflow: hidden;
+}
+.container_wraper{
+    width: 100%;
+    height: 100%;
+    background-color: #19191a;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between ;
+    position: relative;
+}
+.container{
+    width: 1150px;
+    margin: 0 auto;
+}
+/* top part  */
+.topBar{
+    width: 100%;
+    height: 150px;
+    /* background-color: red; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 5px;
+}
+.leftSide{
+    /* color: #fff;
+    height: 100px;
+    background-color: #292929;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; */
+}
+#Activity{
+    font-family: "Big Shoulders Stencil", sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: #cecece4b;
+}
+
+
+.stopWatch{
+    width: 170px;
+    height: 100px;
+    background-color: #292929;
+    border-radius: 10px;
+    backdrop-filter: blur(10);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.stopWatch h1{
+    font-family: "Big Shoulders Stencil", sans-serif;
+    font-size: 45px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 5px;
+}
+.controlWatch{
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 15px;
+    opacity: 0;
+    transition: 0.3s linear;
+    transform: translateY(0);
+}
+.stopWatch:hover .controlWatch{
+    opacity: 1;
+    transform: translateY(4px);
+}
+.controlWatch div i {
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+/* main content  */
+.main_content{
+    width: 100%;
+    height: calc(95dvh - 150px);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    padding: 0px 5px;
+    
+}
+.tasks{
+    position: relative;
+}
+.tasks,
+.progress,
+.delete,
+.complete{
+    height: 100%;
+    /* background-color: green; */
+    width: 250px;
+    text-align: center;
+    user-select: none;
+}
+
+.main_content h3{
+    background-color: #292929;
+    padding: 15px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    /* letter-spacing: 2px; */
+    color: #ffffff;
+}
+.taskList{
+    text-align:start;
+    margin: 8px 0;
+    background-color: #29292991;
+    padding:10px; 
+    border-radius: 8px;
+    color: #dfdfdf;
+    line-height: 22px;
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.taskList p {
+    font-weight: 400;
+    font-size: 15px;
+}
+.taskList:hover {
+    background-color: #292929;
+}
+
+.taskList strong{
+    background-color: #292929;
+    padding: 0px 5px 0px 5px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-size: 10px;
+    transform: translateY(25px);
+    transition: 0.3s;
+    border-radius: 5px;
+}
+.taskList:hover strong{
+    transform: translateY(0);
+}
+
+.progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #292929c5;
+    width: 0%;
+    z-index: -1; 
+    transition: width 1s linear;
+}
+
+
+
+
+.addTaskBtn{
+    background-color: #29292988;
+    padding: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 7px;
+    color: #dfdfdf;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.createTaskList,
+.ProcessingTaskLIst,
+.CompleteTaskList{
+    /* background-color: red; */
+    height: calc(95dvh - 220px);
+    overflow-y: scroll;
+    border-radius: 7px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.CompleteTaskList::-webkit-scrollbar{
+    display: none;
+    width: 0px;
+}
+
+.createTaskList{
+    height: calc(95dvh - 275px);
+}
+
+.trash{
+    width: 100%;
+    height: 250px;
+    background-color: #29292988;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #cccccccb;
+    border-radius: 7px;
+    margin-top: 8px;
+    position: relative;
+}
+
+.trash::after {
+    content: '\f1f8';
+    font-family: "Font Awesome 6 Free"; 
+    font-weight: 900; 
+    position: absolute;
+    font-size: 80px;
+    color: #b9b9b92f;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.trash i{
+    font-size: 80px;
+    z-index: 9999;
+}
+
+.delete{
+   position: relative
+}
+
+
+
+
+
+/* bottom part  */
+.bottom_Part{
+    width: 100%;
+    height: 25px;
+    /* background-color: #19191a; */
+    /* background-color: blue; */
+    text-align: center;
+}
+.bottom_Part p{
+    font-size: 10px;
+    color: #b9b9b9;
+}
+
+
+
+
+.popup_wraper{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:rgba(22, 22, 22, 0.76);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* transform: scale(0); */
+    transition: 0.1s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 99999999999;
+}
+
+.inputBox{
+    width: 500px;
+    height: auto;
+    background-color: #19191a;
+    border-radius: 7px;
+    padding: 20px;
+    border: 2px solid rgba(128, 128, 128, 0.226);
+    transform: translateY(-10px);
+    transition: 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.showBox{
+    transition: 0.1s ease-in-out;
+    /* transform: scale(1); */
+    opacity: 1;
+    visibility: visible;
+}
+.showBoxBox{
+    transition: 0.5s ease-in-out;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.inputBox textarea{
+    width: 100%;
+    background-color: #292929;
+    border: 1px solid rgba(59, 59, 59, 0.651);
+    resize: none;
+    border-radius: 7px;
+    outline: none;
+    margin-bottom: 10px;
+    color: #cccccc;
+    padding: 7px;
+    font-size: 15px;
+}
+.inputBoxTime{
+    display: flex;
+    justify-content: space-between;
+}
+.inputBoxTime input{
+    width: 48%;
+    background-color: #292929;
+    border: 1px solid rgba(59, 59, 59, 0.651);
+    resize: none;
+    border-radius: 7px;
+    outline: none;
+    margin-bottom: 10px;
+    color: #cccccc;
+    padding: 12px 7px;
+    font-size: 15px;
+}
+.addButton input{
+    width: 100%;
+    padding: 11px;
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #c2c2c2;
+    background-color: #292929;
+    border: 1px solid rgba(59, 59, 59, 0.651);
+    border-radius: 7px;
+    cursor: pointer;
+}
+.cancel button{
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #c2c2c2;
+    background-color: rgba(253, 1, 1, 0.705);
+    border: 1px solid rgba(128, 128, 128, 0.651);
+    border-radius: 7px;
+    cursor: pointer;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+@media (max-width: 1190px) {
+    .container{
+        width: 96%;
+        margin: 0 auto;
+    }
+}
+
+/* .taskList {
+    position: relative;
+    padding: 10px;
+    margin: 5px;
+    background-color: #f0f0f0;
+    cursor: move;
+} */
+

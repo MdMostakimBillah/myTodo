@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- custome style -->
+    <link rel="stylesheet" href="./style//style.css">
+    <title>Task</title>
+</head>
+<body>
+    <div class="container_wraper">
+       <div class="container">
+         <!-- topBar  -->
+        <div class="topBar">
+            <div class="leftSide">
+                <div class="logo">
+                    <img src="" alt="">
+                </div>
+                <strong id="Activity"></strong>
+            </div>
+            <audio id="timerSound" src="./audio/success.mp3"></audio>
+            <div class="stopWatch">
+                <h1 class="watch_">25:00</h1>
+                <div class="controlWatch">
+                    <div>
+                        <i id="restBtn" class="fa-solid fa-heart"></i>
+                    </div>
+                    <div>
+                        <i id="pauseAndPlay" class="fa-solid fa-pause"></i>
+                    </div>
+                    <div>
+                        <i id="resetBtn" class="fa-solid fa-rotate"></i>
+                    </div>
+                </div>
+                <!-- <strong id="Activity"></strong> -->
+            </div>
+        </div>
+
+
+        <div class="main_content">
+
+            <div class="tasks">
+                <h3>Create Task</h3>
+                <div id="CreateTask" class="createTaskList status">
+                    <div class="taskList" draggable="true">
+                        
+                        <p>
+                            Make your Plan step by step
+                        </p>
+                        <strong>00:00:00</strong>
+                    </div>
+
+                    
+                    <!-- <div class="taskList">
+                        <p>
+                           Lorem ipsum dolor.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div>
+                    <div class="taskList">
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non odit temporibus rerum. Eveniet quasi beatae dolor accusantium soluta.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div>
+                    <div class="taskList">
+                        <p>
+                           Lorem ipsum dolor, sit amet consectetur adipisicing.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div> -->
+                </div>
+
+                 <!-- add button  -->
+                 <div class="addTaskBtn">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+            </div>
+
+
+            <div class="progress"> 
+                <h3>Processing</h3>
+                <div id="Processing" class="ProcessingTaskLIst status">
+                
+                    <!-- <div class="taskList">
+                        <p>
+                           Lorem ipsum dolor.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div>
+
+                    <div class="taskList">
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non odit temporibus rerum. Eveniet quasi beatae dolor accusantium soluta.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div>
+
+                    <div class="taskList">
+                        <p>
+                           Lorem ipsum dolor, sit amet consectetur adipisicing.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div> -->
+                </div>
+            </div>
+
+
+            <div class="complete">
+                <h3>Complete</h3>
+                <div id="Complete" class="CompleteTaskList status">
+                    <!-- <div class="taskList">
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita, culpa!
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div>
+
+                    <div class="taskList">
+                        <p>
+                           Lorem ipsum dolor.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div>
+
+                    <div class="taskList">
+                        <p>
+                           Lorem ipsum dolor, sit amet consectetur adipisicing.
+                        </p>
+                        <strong>00:25:00</strong>
+                    </div> -->
+                </div>
+            </div>
+
+
+            <div class="delete">
+                <h3>Delete</h3>
+                <div class="trash">
+                    <i class="fa-solid fa-trash"></i>
+                </div>
+
+               
+            </div>
+            
+        </div>
+        
+        <div class="bottom_Part">
+            <p>
+                copyright by @mostakim billah
+            </p>
+       </div>
+
+
+        <!-- input popup  -->
+        <div class="popup_wraper">
+            <div class="inputBox">
+                <form action="">
+                    <div class="">
+                        <textarea class="TaskArea" placeholder="Input task" required name="" id="" rows="5"></textarea>
+                    </div>
+                    <div class="inputBoxTime">
+                        <input max="12" class="hours" type="number" placeholder="Hours">
+                        <input max="60" class="minutes" type="number" required  placeholder="Minutes">
+                    </div>
+                    <div class="addButton">
+                        <input class="submitBtn" type="submit" value="Add Task">
+                    </div>
+                    <div class="cancel">
+                        <button>Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="./script/app.js"></script>
+</body>
+</html>
