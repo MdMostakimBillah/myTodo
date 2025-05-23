@@ -184,18 +184,21 @@ function requestNotificationPermission() {
 
 // Function to show a notification
 function showNotification() {
-    console.log("Attempting to show timeout notification.");
+    console.log("Attempting to show timeout notification at", new Date().toLocaleTimeString());
     if (Notification.permission === "granted") {
         try {
-            new Notification("Task Timeout", {
-                body: "Your time is out"
+            const notification = new Notification("Task Timeout", {
+                body: "Your time is out",
+                tag: "timeout-notification" // Unique tag to prevent duplicates
             });
-            console.log("Notification shown: Your time is out");
+            console.log("Notification shown at", new Date().toLocaleTimeString());
+            notification.onshow = () => console.log("Notification displayed to user");
+            notification.onerror = (error) => console.error("Notification error:", error);
         } catch (error) {
-            console.error("Failed to show notification:", error);
+            console.error("Failed to show notification:", error.message || error);
         }
     } else {
-        console.log("Notification not shown: Permission not granted");
+        console.log("Notification not shown: Permission not granted at", new Date().toLocaleTimeString());
     }
 }
 
@@ -306,7 +309,7 @@ function startTimer(taskId) {
                 if (progressBar) progressBar.style.width = '100%';
                 showNotification();
             }
-            console.log(`Timer for task ${taskId} completed`);
+            console.log(`Timer for task ${taskId} completed at`, new Date().toLocaleTimeString());
             return;
         }
 
@@ -316,7 +319,7 @@ function startTimer(taskId) {
         task.timerState = 'running';
         task.progress = ((initialSeconds - remainingSeconds) / initialSeconds) * 100;
         localStorage.setItem('movedTasks', JSON.stringify(allTasks));
-        console.log(`Task ${taskId}: Updated remainingSeconds=${remainingSeconds}, progress=${task.progress}%`);
+        console.log(`Task ${taskId}: Updated remainingSeconds=${remainingSeconds}, progress=${task.progress}% at`, new Date().toLocaleTimeString());
 
         const taskDiv = document.querySelector(`.taskList[data-task-id="${taskId}"]`);
         if (taskDiv) {
